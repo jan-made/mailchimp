@@ -15,7 +15,7 @@ jobs:
     name: "Nette Tester (8.4)"
     runs-on: "blacksmith-2vcpu-ubuntu-2404"
     steps:
-      - uses: "actions/checkout@v4"
+      - uses: "actions/checkout@v6"
       - uses: "contributte/.github/.github/actions/setup-php@master"
         with:
           php: "8.4"
