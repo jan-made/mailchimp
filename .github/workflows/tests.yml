@@ -24,6 +24,7 @@ jobs:
         env:
           MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
           MAILCHIMP_TEST_LIST: ${{ secrets.MAILCHIMP_TEST_LIST }}
+          MAILCHIMP_EXPECT_MISSING_KEYS: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
 
   test83:
     name: "Nette Tester (8.3)"
@@ -38,6 +39,7 @@ jobs:
         env:
           MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
           MAILCHIMP_TEST_LIST: ${{ secrets.MAILCHIMP_TEST_LIST }}
+          MAILCHIMP_EXPECT_MISSING_KEYS: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
 
   test82:
     name: "Nette Tester (8.2)"
@@ -52,6 +54,7 @@ jobs:
         env:
           MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
           MAILCHIMP_TEST_LIST: ${{ secrets.MAILCHIMP_TEST_LIST }}
+          MAILCHIMP_EXPECT_MISSING_KEYS: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
 
   testlower:
     name: "Nette Tester (8.2 lowest)"
@@ -68,3 +71,4 @@ jobs:
         env:
           MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
           MAILCHIMP_TEST_LIST: ${{ secrets.MAILCHIMP_TEST_LIST }}
+          MAILCHIMP_EXPECT_MISSING_KEYS: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}

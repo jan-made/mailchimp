@@ -10,6 +10,14 @@ if (!class_exists('Tester\Assert')) {
 
 Tester\Environment::setup();
 
+$expectMissingKeys = getenv('MAILCHIMP_EXPECT_MISSING_KEYS') === 'true';
+$apiKey = getenv('MAILCHIMP_API_KEY');
+$testList = getenv('MAILCHIMP_TEST_LIST');
+
+if ($expectMissingKeys && (empty($apiKey) || empty($testList))) {
+    Tester\Environment::skip('MAILCHIMP_API_KEY or MAILCHIMP_TEST_LIST not available (expected in this environment)');
+}
+
 $tempDir = implode(DIRECTORY_SEPARATOR, [__DIR__, 'temp', Nette\Utils\Random::generate()]);
 $logDir = implode(DIRECTORY_SEPARATOR, [__DIR__, 'log']);
 
