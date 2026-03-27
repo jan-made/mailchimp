@@ -47,17 +47,20 @@ final class MailChimpExtension extends CompilerExtension
             'http' => Expect::structure([
                 'clientFactory' => Expect::anyOf(Expect::string(), Expect::array(), Expect::type(Statement::class))->nullable(),
                 'caChain' => Expect::anyOf(Expect::string(), Expect::type(Statement::class))->nullable(),
-                'client' => Expect::array()->dynamic()->default([]),
+                /** @phpstan-ignore method.notFound (Expect::array() returns Type which has dynamic()) */
+                'client' => Expect::array()->default([])->dynamic(),
             ]),
-        ])->before(function ($config) {
+        ])->before(function (mixed $config) {
+            assert(is_array($config));
             if ($config['findDataCenter'] ?? self::findDataCenter) {
                 $config['apiUrl'] = $config['apiUrlTemplate'] ?? self::apiUrlTemplate;
             }
 
             return $config;
-        })->assert(function ($config) {
-            foreach (array_keys($config->segments) as $listName) {
-                Validators::assertField($config->lists, $listName);
+        })->assert(function (mixed $config) : bool {
+            assert($config instanceof stdClass);
+            foreach (array_keys((array) $config->segments) as $listName) {
+                Validators::assertField((array) $config->lists, $listName);
             }
 
             return true;

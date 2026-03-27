@@ -1,0 +1,29 @@
+name: "Coverage"
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+  push:
+    branches: ["*"]
+
+  schedule:
+    - cron: "0 8 * * 1"
+
+jobs:
+  coverage:
+    name: "Nette Tester (8.4)"
+    runs-on: "blacksmith-2vcpu-ubuntu-2404"
+    steps:
+      - uses: "actions/checkout@v4"
+      - uses: "contributte/.github/.github/actions/setup-php@master"
+        with:
+          php: "8.4"
+      - uses: "contributte/.github/.github/actions/setup-composer@master"
+      - run: "make coverage-clover"
+        env:
+          MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
+          MAILCHIMP_TEST_LIST: ${{ secrets.MAILCHIMP_TEST_LIST }}
+      - uses: "codecov/codecov-action@v4"
+        env:
+          CODECOV_TOKEN: "${{ secrets.CODECOV_TOKEN }}"
