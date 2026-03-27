@@ -24,6 +24,7 @@ jobs:
         env:
           MAILCHIMP_API_KEY: ${{ secrets.MAILCHIMP_API_KEY }}
           MAILCHIMP_TEST_LIST: ${{ secrets.MAILCHIMP_TEST_LIST }}
+          MAILCHIMP_EXPECT_MISSING_KEYS: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
       - uses: "codecov/codecov-action@v4"
         env:
           CODECOV_TOKEN: "${{ secrets.CODECOV_TOKEN }}"
