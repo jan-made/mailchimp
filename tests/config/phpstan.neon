@@ -1,7 +1,8 @@
 parameters:
-	checkMissingIterableValueType: false
 	treatPhpDocTypesAsCertain: false
 	ignoreErrors:
+		-
+			identifier: missingType.iterableValue
 		-
 			message: '~^Method Trejjam\\MailChimp\\Entity\\AEntity::__set\(\) has parameter \$value with no type specified\.$~'
 			path: %currentWorkingDirectory%/src/Entity/AEntity.php

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use PhpCsFixer\Fixer\Basic\CurlyBracesPositionFixer;
+use PhpCsFixer\Fixer\Basic\BracesPositionFixer;
 use PhpCsFixer\Fixer\ControlStructure\ControlStructureContinuationPositionFixer;
 use PhpCsFixer\Fixer\FunctionNotation\ReturnTypeDeclarationFixer;
 use PhpCsFixer\Fixer\Operator\BinaryOperatorSpacesFixer;
@@ -40,7 +40,7 @@ return static function (ECSConfig $ecsConfig) use ($rootDir) : void {
     $ecsConfig->ruleWithConfiguration(ControlStructureContinuationPositionFixer::class, [
         'position' => ControlStructureContinuationPositionFixer::NEXT_LINE,
     ]);
-    $ecsConfig->ruleWithConfiguration(CurlyBracesPositionFixer::class, [
-        'functions_opening_brace' => CurlyBracesPositionFixer::NEXT_LINE_UNLESS_NEWLINE_AT_SIGNATURE_END,
+    $ecsConfig->ruleWithConfiguration(BracesPositionFixer::class, [
+        'functions_opening_brace' => BracesPositionFixer::NEXT_LINE_UNLESS_NEWLINE_AT_SIGNATURE_END,
     ]);
 };
