@@ -150,6 +150,9 @@ final class MailChimpExtension extends CompilerExtension
             );
     }
 
+    /**
+     * @param class-string $type
+     */
     private function registerFactory(string $name, string $type, string|array|Statement $factory) : ServiceDefinition
     {
         $builder = $this->getContainerBuilder();
