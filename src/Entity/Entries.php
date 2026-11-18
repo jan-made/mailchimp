@@ -5,7 +5,7 @@ namespace Trejjam\MailChimp\Entity;
 
 use Schematic;
 
-final class Entries extends Schematic\Entries
+final class Entries extends SchematicEntries
 {
     /**
      * @return array<string, Schematic\Entry>
