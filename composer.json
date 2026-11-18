@@ -17,10 +17,10 @@
 		"trejjam/mail-chimp": "self.version"
 	},
 	"require": {
-		"php": "^8.2 || ^8.3 || ^8.4",
+		"php": "^8.4",
 
 		"composer/ca-bundle": "^1.5",
-		"nette/di": "^3.2.5",
+		"nette/di": "^3.2.6",
 		"nette/utils": "^4.1",
 		"guzzlehttp/guzzle": "^7.10",
 		"tharos/schematic": "^1.5",
