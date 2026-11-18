@@ -10,6 +10,10 @@ on:
   schedule:
     - cron: "0 8 * * 1"
 
+# The runner image ships an outdated PHP 8.3, which roave/security-advisories rejects.
+env:
+  update: true
+
 jobs:
   coverage:
     name: "Nette Tester (8.4)"
