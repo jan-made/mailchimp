@@ -6,7 +6,11 @@ use PhpCsFixer\Fixer\Basic\BracesPositionFixer;
 use PhpCsFixer\Fixer\ControlStructure\ControlStructureContinuationPositionFixer;
 use PhpCsFixer\Fixer\FunctionNotation\ReturnTypeDeclarationFixer;
 use PhpCsFixer\Fixer\Operator\BinaryOperatorSpacesFixer;
+use PhpCsFixer\Fixer\Phpdoc\PhpdocNoAliasTagFixer;
 use PhpCsFixer\Fixer\PhpTag\BlankLineAfterOpeningTagFixer;
+use PhpCsFixer\Fixer\Strict\DeclareStrictTypesFixer;
+use PhpCsFixer\Fixer\Strict\StrictComparisonFixer;
+use PhpCsFixer\Fixer\Strict\StrictParamFixer;
 use Symplify\EasyCodingStandard\Config\ECSConfig;
 use Symplify\EasyCodingStandard\ValueObject\Option;
 
@@ -21,7 +25,11 @@ return static function (ECSConfig $ecsConfig) use ($rootDir) : void {
 
     $ecsConfig->import($rootDir . 'vendor/symplify/easy-coding-standard/config/set/common/namespaces.php');
 
-    $ecsConfig->import($rootDir . 'vendor/symplify/easy-coding-standard/config/set/common/strict.php');
+    $ecsConfig->rules([
+        DeclareStrictTypesFixer::class,
+        StrictComparisonFixer::class,
+        StrictParamFixer::class,
+    ]);
 
     $ecsConfig->import($rootDir . 'vendor/symplify/easy-coding-standard/config/set/clean-code.php');
 
@@ -34,6 +42,12 @@ return static function (ECSConfig $ecsConfig) use ($rootDir) : void {
         BinaryOperatorSpacesFixer::class => null,
     ]);
 
+    $ecsConfig->ruleWithConfiguration(PhpdocNoAliasTagFixer::class, [
+        'replacements' => [
+            'link' => 'see',
+            'type' => 'var',
+        ],
+    ]);
     $ecsConfig->ruleWithConfiguration(ReturnTypeDeclarationFixer::class, [
         'space_before' => 'one',
     ]);
