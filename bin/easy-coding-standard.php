@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use PhpCsFixer\Fixer\Basic\BracesFixer;
 use PhpCsFixer\Fixer\Basic\BracesPositionFixer;
 use PhpCsFixer\Fixer\ControlStructure\ControlStructureContinuationPositionFixer;
 use PhpCsFixer\Fixer\FunctionNotation\ReturnTypeDeclarationFixer;
@@ -14,47 +15,40 @@ use PhpCsFixer\Fixer\Strict\StrictParamFixer;
 use Symplify\EasyCodingStandard\Config\ECSConfig;
 use Symplify\EasyCodingStandard\ValueObject\Option;
 
-$rootDir = __DIR__ . '/../';
+$setDir = __DIR__ . '/../vendor/symplify/easy-coding-standard/config/set/';
 
-return static function (ECSConfig $ecsConfig) use ($rootDir) : void {
-    $ecsConfig->import($rootDir . 'vendor/symplify/easy-coding-standard/config/set/common/array.php');
-
-    $ecsConfig->import($rootDir . 'vendor/symplify/easy-coding-standard/config/set/common/control-structures.php');
-
-    $ecsConfig->import($rootDir . 'vendor/symplify/easy-coding-standard/config/set/common/docblock.php');
-
-    $ecsConfig->import($rootDir . 'vendor/symplify/easy-coding-standard/config/set/common/namespaces.php');
-
-    $ecsConfig->rules([
+return ECSConfig::configure()
+    ->withSets([
+        $setDir . 'common/array.php',
+        $setDir . 'common/control-structures.php',
+        $setDir . 'common/docblock.php',
+        $setDir . 'common/namespaces.php',
+        $setDir . 'clean-code.php',
+        $setDir . 'psr12.php',
+    ])
+    ->withRules([
         DeclareStrictTypesFixer::class,
         StrictComparisonFixer::class,
         StrictParamFixer::class,
-    ]);
-
-    $ecsConfig->import($rootDir . 'vendor/symplify/easy-coding-standard/config/set/clean-code.php');
-
-    $ecsConfig->import($rootDir . 'vendor/symplify/easy-coding-standard/config/set/psr12.php');
-
-    $ecsConfig->indentation(Option::INDENTATION_SPACES);
-    $ecsConfig->skip([
-        BlankLineAfterOpeningTagFixer::class => null,
-        PhpCsFixer\Fixer\Basic\BracesFixer::class => null,
-        BinaryOperatorSpacesFixer::class => null,
-    ]);
-
-    $ecsConfig->ruleWithConfiguration(PhpdocNoAliasTagFixer::class, [
+    ])
+    ->withSpacing(Option::INDENTATION_SPACES)
+    ->withSkip([
+        BlankLineAfterOpeningTagFixer::class,
+        BracesFixer::class,
+        BinaryOperatorSpacesFixer::class,
+    ])
+    ->withConfiguredRule(PhpdocNoAliasTagFixer::class, [
         'replacements' => [
             'link' => 'see',
             'type' => 'var',
         ],
-    ]);
-    $ecsConfig->ruleWithConfiguration(ReturnTypeDeclarationFixer::class, [
+    ])
+    ->withConfiguredRule(ReturnTypeDeclarationFixer::class, [
         'space_before' => 'one',
-    ]);
-    $ecsConfig->ruleWithConfiguration(ControlStructureContinuationPositionFixer::class, [
+    ])
+    ->withConfiguredRule(ControlStructureContinuationPositionFixer::class, [
         'position' => ControlStructureContinuationPositionFixer::NEXT_LINE,
-    ]);
-    $ecsConfig->ruleWithConfiguration(BracesPositionFixer::class, [
+    ])
+    ->withConfiguredRule(BracesPositionFixer::class, [
         'functions_opening_brace' => BracesPositionFixer::NEXT_LINE_UNLESS_NEWLINE_AT_SIGNATURE_END,
     ]);
-};
