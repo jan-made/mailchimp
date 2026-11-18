@@ -17,7 +17,7 @@
 		"trejjam/mail-chimp": "self.version"
 	},
 	"require": {
-		"php": "^8.4 || ^8.5",
+		"php": "~8.4.0 || ~8.5.0",
 
 		"composer/ca-bundle": "^1.5",
 		"nette/di": "^3.2.6",
