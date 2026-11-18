@@ -14,7 +14,6 @@ final class Entries extends Schematic\Entries
     {
         $out = parent::toArray();
 
-        /** @var AEntity|Entries|Schematic\Entry $entity */
         foreach ($out as $key => $entity) {
             if ($entity instanceof AEntity) {
                 $out[$key] = $entity->toArray();

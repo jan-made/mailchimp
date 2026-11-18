@@ -52,7 +52,7 @@ final class MailChimpExtension extends CompilerExtension
             ]),
         ])->before(function (mixed $config) {
             assert(is_array($config));
-            if ($config['findDataCenter'] ?? self::findDataCenter) {
+            if (($config['findDataCenter'] ?? self::findDataCenter) === true) {
                 $config['apiUrl'] = $config['apiUrlTemplate'] ?? self::apiUrlTemplate;
             }
 

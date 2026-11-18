@@ -9,9 +9,6 @@ parameters:
 		-
 			message: '~^Method Trejjam\\MailChimp\\Entity\\AEntity::__get\(\) has no return type specified\.$~'
 			path: %currentWorkingDirectory%/src/Entity/AEntity.php
-		-
-			message: '~^Method Trejjam\\MailChimp\\Entity\\Entries::toArray\(\) should return array<string, Schematic\\Entry> but returns array<array\|Schematic\\Entry>\.$~'
-			path: %currentWorkingDirectory%/src/Entity/Entries.php
 
 	earlyTerminatingMethodCalls:
 		Nette\Application\UI\Presenter:

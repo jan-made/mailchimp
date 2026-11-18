@@ -8,7 +8,7 @@ use Schematic\Entries;
 use Trejjam\MailChimp\Entity;
 
 /**
- * @property-read ListItem[]&Entries $lists
+ * @property-read Entries $lists
  * @property-read int                $total_items
  */
 final class Lists extends Schematic\Entry
@@ -25,6 +25,7 @@ final class Lists extends Schematic\Entry
      */
     public function getLists() : array
     {
+        // @phpstan-ignore return.type (Schematic types entries as Entry, but creates the associated class)
         return $this->lists->toArray();
     }
 }
