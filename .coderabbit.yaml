@@ -44,7 +44,7 @@ reviews:
     - path: "src/DI/**"
       instructions: "Check extension config schema, defaults and service registration stay backward compatible for existing Nette apps."
     - path: "tests/**"
-      instructions: "Nette Tester tests; tests must not call the real Mailchimp API without config.local.neon and must skip cleanly otherwise."
+      instructions: "Nette Tester tests. Integration tests take credentials from the MAILCHIMP_API_KEY and MAILCHIMP_TEST_LIST environment variables (as CI does) or from the optional tests/config/config.local.neon, and must skip cleanly when neither provides them. Unit tests must never call the real Mailchimp API."
 knowledge_base:
   code_guidelines:
     enabled: true
