@@ -8,6 +8,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
 use Nette\Utils\Json;
 use Nette\Utils\JsonException;
+use Schematic;
 use Trejjam\MailChimp\Exception\RequestException;
 
 final class Request
@@ -183,6 +184,10 @@ final class Request
         ?PaginationOption $paginationOption = null
     ) {
         $returnArray = $this->makeRequest($method, $endpointPath, $requestOptions, $paginationOption);
+
+        if (is_a($endpointClass, Schematic\Entry::class, true)) {
+            return new $endpointClass($returnArray, Entity\SchematicEntries::class);
+        }
 
         return new $endpointClass($returnArray);
     }
