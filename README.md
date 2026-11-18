@@ -23,8 +23,9 @@ composer require jan-made/mail-chimp
 
 | State  | Version | Branch   | PHP                          |
 |--------|---------|----------|------------------------------|
-| dev    | `^0.7`  | `master` | `~8.4.0 \|\| ~8.5.0`         |
-| stable | `^0.6`  | `master` | `^8.2 \|\| ^8.3 \|\| ^8.4`  |
+| dev    | `^0.8`  | `master` | `~8.4.0 \|\| ~8.5.0`         |
+| stable | `^0.7`  | `master` | `~8.4.0 \|\| ~8.5.0`         |
+| stable | `^0.6`  | `0.6.x`  | `^8.2 \|\| ^8.3 \|\| ^8.4`  |
 | stable | `^0.5`  | `master` | `>= 7.3`                    |
 | stable | `^0.4`  | `master` | `>= 7.2`                    |
 | stable | `^0.3`  | `master` | `>= 7.2`                    |
