@@ -9,6 +9,7 @@ updates:
       - "trejjam"
     labels:
       - "automerge"
+      - "dependencies"
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -18,3 +19,4 @@ updates:
       - "trejjam"
     labels:
       - "automerge"
+      - "dependencies"
