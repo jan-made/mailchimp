@@ -15,6 +15,8 @@ use Trejjam\MailChimp\Exception\ListNotFoundException;
 use Trejjam\MailChimp\Exception\MemberNotFoundException;
 use Trejjam\MailChimp\Exception\RequestException;
 use Trejjam\MailChimp\Exception\SegmentNameTooLongException;
+use Trejjam\MailChimp\Logger\IExceptionLogger;
+use Trejjam\MailChimp\Logger\NullExceptionLogger;
 use Trejjam\MailChimp\PaginationOption;
 use Trejjam\MailChimp\Request;
 
@@ -26,7 +28,8 @@ final class Lists
     private const SEGMENT_NAME_MAX_LENGTH = 100;
 
     public function __construct(
-        private readonly Request $apiRequest
+        private readonly Request $apiRequest,
+        private readonly IExceptionLogger $exceptionLogger = new NullExceptionLogger()
     ) {
     }
 
@@ -312,7 +315,7 @@ final class Lists
             );
         }
         catch (ClientException $clientException) {
-            \Tracy\Debugger::getLogger()->log($clientException);
+            $this->exceptionLogger->log($clientException);
             throw new MemberNotFoundException("Member '{$memberItem->id}' not added into segment '{$segmentId}'", $clientException);
         }
     }

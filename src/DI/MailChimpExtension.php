@@ -6,14 +6,17 @@ namespace Trejjam\MailChimp\DI;
 use Composer;
 use GuzzleHttp;
 use Nette\DI\CompilerExtension;
+use Nette\DI\Definitions\Reference;
 use Nette\DI\Definitions\ServiceDefinition;
 use Nette\DI\Definitions\Statement;
+use Nette\DI\ServiceCreationException;
 use Nette\PhpGenerator\Literal;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
 use Nette\Utils\Strings;
 use Nette\Utils\Validators;
 use stdClass;
+use Tracy\ILogger;
 use Trejjam\MailChimp;
 use function sprintf;
 
@@ -28,6 +31,7 @@ final class MailChimpExtension extends CompilerExtension
 {
     private const findDataCenter = true;
     private const apiUrlTemplate = 'https://%s.api.mailchimp.com/%s/';
+    private const tracyLoggerService = 'tracy.logger';
 
     public function getConfigSchema() : Schema
     {
@@ -133,6 +137,19 @@ final class MailChimpExtension extends CompilerExtension
         $builder->addDefinition($this->prefix('group.lists'))
             ->setType(MailChimp\Group\Lists::class);
 
+        if ($builder->getByType(MailChimp\Logger\IExceptionLogger::class) === null) {
+            $exceptionLogger = $builder->addDefinition($this->prefix('exceptionLogger'))
+                ->setType(MailChimp\Logger\IExceptionLogger::class);
+
+            $tracyLogger = $this->findTracyLogger();
+            if ($tracyLogger !== null) {
+                $exceptionLogger->setFactory(MailChimp\Logger\TracyExceptionLogger::class, [new Reference($tracyLogger)]);
+            }
+            else {
+                $exceptionLogger->setFactory(MailChimp\Logger\NullExceptionLogger::class);
+            }
+        }
+
         $builder->addDefinition($this->prefix('lists'))
             ->setType(MailChimp\Lists::class)
             ->setArguments(
@@ -148,6 +165,26 @@ final class MailChimpExtension extends CompilerExtension
                     'segments' => $this->config->segments,
                 ]
             );
+    }
+
+    /**
+     * Of several autowired Tracy loggers, only the one of the Tracy extension is used.
+     */
+    private function findTracyLogger() : ?string
+    {
+        if (!interface_exists(ILogger::class)) {
+            return null;
+        }
+
+        $builder = $this->getContainerBuilder();
+
+        try {
+            return $builder->getByType(ILogger::class);
+        }
+        /** @phpstan-ignore catch.neverThrown (ContainerBuilder::getByType() does not declare what its autowiring throws) */
+        catch (ServiceCreationException) {
+            return $builder->hasDefinition(self::tracyLoggerService) ? self::tracyLoggerService : null;
+        }
     }
 
     /**

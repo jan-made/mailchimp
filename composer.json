@@ -45,6 +45,9 @@
 
 		"roave/security-advisories": "dev-master"
 	},
+	"suggest": {
+		"tracy/tracy": "Logs rejected MailChimp requests through Tracy"
+	},
 	"autoload": {
 		"psr-4": {
 			"Trejjam\\MailChimp\\": "src/"
