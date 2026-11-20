@@ -3,6 +3,7 @@
 ## Content
 
 - [Configuration](#configuration)
+- [Exception logging](#exception-logging)
 - [Services available in DI container](#services-available-in-di-container)
 - [Usage](#usage)
 
@@ -63,6 +64,20 @@ contributte.guzzle:
   debug: %debugMode%
 ```
 
+## Exception logging
+
+`Trejjam\MailChimp\Group\Lists::addSegmentMember()` logs the Guzzle exception of a request that MailChimp rejects, then throws `MemberNotFoundException`.
+The exception goes to the `Trejjam\MailChimp\Logger\IExceptionLogger` service:
+
+- When the container has a `Tracy\ILogger` service, the extension registers `TracyExceptionLogger`, which passes the exception to Tracy.
+- Without Tracy, the extension registers `NullExceptionLogger`, which does nothing.
+- When the application registers its own `IExceptionLogger` service, the extension uses that one and registers none.
+
+```yaml
+services:
+    - App\Model\MailChimpExceptionLogger # implements Trejjam\MailChimp\Logger\IExceptionLogger
+```
+
 ## Services available in DI container
 
 - [`Trejjam\MailChimp\Request`](https://github.com/trejjam/mailchimp/blob/master/src/Request.php)  
@@ -73,6 +88,8 @@ contributte.guzzle:
 	The simplest API scope, provides only one `get` method returning object with user info (related to API token) 
 - [`Trejjam\MailChimp\Group\Lists`](https://github.com/trejjam/mailchimp/blob/master/src/Group/Lists.php)  
 	API scope containing methods to manipulate with entities in Mailchimp lists. See class content to check available operations.
+- [`Trejjam\MailChimp\Logger\IExceptionLogger`](https://github.com/trejjam/mailchimp/blob/master/src/Logger/IExceptionLogger.php)  
+	Receives the exceptions of rejected requests. See [Exception logging](#exception-logging).
 - [`Trejjam\MailChimp\Lists`](https://github.com/trejjam/mailchimp/blob/master/src/Lists.php)  
     Configuration object supposed to provide mapping between lists in Mailchimp environment and local friendly names
 - [`Trejjam\MailChimp\Segments`](https://github.com/trejjam/mailchimp/blob/master/src/Segments.php)  
