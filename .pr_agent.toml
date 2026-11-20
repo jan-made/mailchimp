@@ -34,7 +34,8 @@ Tests (`tests/`):
 - A new `ignoreErrors` entry in `tests/config/phpstan.neon` states its reason in a comment or in the PR description.
 
 Compatibility:
-- Flag code in `src/` that uses `tracy/tracy`, `nette/bootstrap` or `nette/tester`; they are only in `require-dev`.
+- Flag code in `src/` that uses `nette/bootstrap` or `nette/tester`; they are only in `require-dev`.
+- `tracy/tracy` is optional: in `src/`, only `Logger/TracyExceptionLogger.php` and the `interface_exists(ILogger::class)` check in `MailChimpExtension` name a Tracy class.
 - A removed or renamed public method, config option or DI service name is marked as breaking in the PR description.
 - A change to the `php` constraint in `composer.json` updates the Versions table in `README.md` in the same PR, and `.github/workflows/tests.yml` when the supported versions change.
 """
