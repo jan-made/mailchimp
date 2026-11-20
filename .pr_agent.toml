@@ -1,0 +1,48 @@
+# PR-Agent settings for this repository. PR-Agent reads this file from the
+# default branch (master).
+# Options: https://github.com/The-PR-Agent/pr-agent/blob/v0.50.0/pr_agent/settings/configuration.toml
+
+[github_app]
+# Review draft pull requests too, and run /describe and /review again on every push.
+feedback_on_draft_pr = true
+handle_push_trigger = true
+
+[pr_reviewer]
+num_max_findings = 5
+extra_instructions = """\
+Also check these rules:
+
+Requests and errors (`src/Request.php`, `src/Group/`, `src/Exception/`):
+- HTTP calls go through the `Request` class; `src/Group/` classes never call Guzzle directly.
+- The API key travels only in `RequestOptions::AUTH` in `Request::makeRequest()`. It never appears in an endpoint path, query string, exception message or log call.
+- `src/Group/` methods catch Guzzle `ClientException` and throw the matching `src/Exception/` class (`ListNotFoundException`, `MemberNotFoundException`, `SegmentNotFoundException`) with the original as previous.
+- `makeRequest()` throws `RequestException` for any status other than 200. A new DELETE or action call handles 204 as `removeMember()` does.
+- Paginated reads take `?PaginationOption` and advance with `nextPage()` until `total_items` is reached.
+
+Entities (`src/Entity/`):
+- A new API field gets a `@property` or `@property-read` tag on the entity. Server-set fields go in `$readOnly`; nested objects and lists go in `$associations`.
+- PATCH calls send `getUpdated()`; PUT calls send `toArray()`. Member ids come from `MemberItem::getSubscriberHash()`.
+
+DI extension (`src/DI/MailChimpExtension.php`):
+- A new option has a schema entry with a default in `getConfigSchema()` and is documented in `.docs/README.md`. Existing options and service names keep working for current Nette apps.
+- The `http.client` service stays non-autowired. TLS `verify` defaults to the `composer/ca-bundle` path and is never disabled.
+
+Tests and QA:
+- Tests are Nette Tester cases in `tests/cases/` that load `tests/bootstrap.php`, so they skip when `MAILCHIMP_EXPECT_MISSING_KEYS=true` and credentials are missing, as on pull requests.
+- Credentials come only from `MAILCHIMP_API_KEY` and `MAILCHIMP_TEST_LIST` or the git-ignored `tests/config/config.local.neon`. No committed file contains a real key or list id.
+- `src/` uses only packages from `require`; `tracy/tracy`, `nette/bootstrap` and `nette/tester` are dev-only.
+- Changes pass `make phpstan` (level 9) and `make ecs`. A new `ignoreErrors` entry in `tests/config/phpstan.neon` states its reason.
+- `composer.json` keeps `php` at `~8.4.0 || ~8.5.0` to match `.github/workflows/tests.yml`. A breaking change bumps `extra.branch-alias.dev-master`.
+"""
+
+[pr_code_suggestions]
+# Publish only suggestions scored 5 or higher (0-10).
+suggestions_score_threshold = 5
+extra_instructions = "Prefer existing project helpers and patterns over new abstractions. Do not suggest edits to the PhpStorm-generated files in `.idea/`."
+
+[ignore]
+# Generated code and lock files. Replaces the default list; keep vendor/** first.
+glob = [
+    "vendor/**",
+    ".idea/**",
+]
