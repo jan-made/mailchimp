@@ -69,7 +69,7 @@ contributte.guzzle:
 `Trejjam\MailChimp\Group\Lists::addSegmentMember()` logs the Guzzle exception of a request that MailChimp rejects, then throws `MemberNotFoundException`.
 The exception goes to the `Trejjam\MailChimp\Logger\IExceptionLogger` service:
 
-- When the container has a `Tracy\ILogger` service, the extension registers `TracyExceptionLogger`, which passes the exception to Tracy.
+- When the container has a `Tracy\ILogger` service, the extension registers `TracyExceptionLogger`, which passes the exception to Tracy. Of several autowired `Tracy\ILogger` services it uses `tracy.logger`; when no service has that name, it registers `NullExceptionLogger`.
 - Without Tracy, the extension registers `NullExceptionLogger`, which does nothing.
 - When the application registers its own `IExceptionLogger` service, the extension uses that one and registers none.
 
