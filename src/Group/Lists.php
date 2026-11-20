@@ -312,7 +312,6 @@ final class Lists
             );
         }
         catch (ClientException $clientException) {
-            \Tracy\Debugger::getLogger()->log($clientException);
             throw new MemberNotFoundException("Member '{$memberItem->id}' not added into segment '{$segmentId}'", $clientException);
         }
     }
