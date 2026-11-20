@@ -1,0 +1,54 @@
+# PR-Agent settings for this repository. PR-Agent reads this file from the
+# default branch (master).
+# Options: https://github.com/The-PR-Agent/pr-agent/blob/v0.50.0/pr_agent/settings/configuration.toml
+
+[github_app]
+# Review draft pull requests too, and run /describe and /review again after each push by a person.
+# The PR-Agent host skips pull requests and pushes from bot accounts.
+feedback_on_draft_pr = true
+handle_push_trigger = true
+
+[pr_reviewer]
+num_max_findings = 5
+extra_instructions = """\
+Repository rules. Check every rule in each area the diff touches. A changed line that breaks one is a finding, even when the code runs.
+
+Requests and errors (`src/Request.php`, `src/Group/`, `src/Exception/`):
+- HTTP calls go through `Request`; Group classes do not create or call a Guzzle `Client`.
+- The API key travels only in `RequestOptions::AUTH` in `makeRequest()`; it never appears in an endpoint path, query string, exception message or log call.
+- Group methods catch Guzzle `ClientException` and throw the matching `ListNotFoundException`, `MemberNotFoundException` or `SegmentNotFoundException` with the original as previous.
+- A new DELETE or action call catches the `RequestException` that `makeRequest()` throws for status 204 and returns null, as `removeMember()` does.
+- PATCH calls send `getUpdated()`; PUT calls send `toArray()`.
+- Paginated reads take `?PaginationOption` and advance with `nextPage()` until `total_items` is reached.
+
+Entities (`src/Entity/`):
+- A field added to an entity has a `@property` or `@property-read` tag. Server-set fields are in `$readOnly`; nested objects and lists are in `$associations`.
+
+DI extension (`src/DI/MailChimpExtension.php`):
+- A new option has a default in `getConfigSchema()`, and the same PR documents it in `.docs/README.md`.
+- The `http.client` service stays non-autowired. TLS `verify` defaults to the `composer/ca-bundle` path; it is never set to false.
+
+Tests (`tests/`):
+- A new test is a Nette Tester case in `tests/cases/` that requires `tests/bootstrap.php`, which skips it when `MAILCHIMP_EXPECT_MISSING_KEYS=true` and credentials are missing.
+- Credentials come from `MAILCHIMP_API_KEY` and `MAILCHIMP_TEST_LIST` or the git-ignored `tests/config/config.local.neon`; a real API key or list id never appears in a committed file.
+- A new `ignoreErrors` entry in `tests/config/phpstan.neon` states its reason in a comment or in the PR description.
+
+Compatibility:
+- Flag code in `src/` that uses `tracy/tracy`, `nette/bootstrap` or `nette/tester`; they are only in `require-dev`.
+- A removed or renamed public method, config option or DI service name is marked as breaking in the PR description.
+- A change to the `php` constraint in `composer.json` updates the Versions table in `README.md` in the same PR, and `.github/workflows/tests.yml` when the supported versions change.
+"""
+
+[pr_code_suggestions]
+# Publish only suggestions scored 5 or higher (0-10).
+suggestions_score_threshold = 5
+# Drop a suggestion whose score could not be computed; the default 7 would publish it.
+score_on_reflection_failure = 4
+extra_instructions = "Prefer existing project helpers and patterns over new abstractions."
+
+[ignore]
+# Generated code and lock files. Replaces the default list; keep vendor/** first.
+glob = [
+    "vendor/**",
+    ".idea/**",
+]
