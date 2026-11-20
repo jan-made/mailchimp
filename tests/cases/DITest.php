@@ -10,7 +10,11 @@ use Nette\DI\Definitions\Reference;
 use Nette\DI\Definitions\ServiceDefinition;
 use Tester\Assert;
 use Tester\TestCase;
+use Tracy\Debugger;
+use Tracy\ILogger;
 use Trejjam\MailChimp\DI\MailChimpExtension;
+use Trejjam\MailChimp\Logger\NullExceptionLogger;
+use Trejjam\MailChimp\Logger\TracyExceptionLogger;
 
 $container = require __DIR__ . '/../bootstrap.php';
 
@@ -157,6 +161,71 @@ final class DITest extends TestCase
 
         $httpClientServiceDefinition = $httpClient->getFactory()->getEntity();
         Assert::same('GuzzleHttp\Client([])', $httpClientServiceDefinition);
+    }
+    public function testExceptionLoggerWithoutTracy() : void
+    {
+        $compiler = $this->createCompiler();
+        $compiler->processExtensions();
+
+        $this->getExtension($compiler)->beforeCompile();
+
+        Assert::same(NullExceptionLogger::class, $this->getExceptionLoggerEntity($compiler));
+    }
+
+    public function testExceptionLoggerWithTracy() : void
+    {
+        $compiler = $this->createCompiler();
+        $compiler->getContainerBuilder()
+            ->addDefinition('tracy.logger')
+            ->setType(ILogger::class)
+            ->setFactory([Debugger::class, 'getLogger']);
+        $compiler->processExtensions();
+
+        $this->getExtension($compiler)->beforeCompile();
+
+        Assert::same(TracyExceptionLogger::class, $this->getExceptionLoggerEntity($compiler));
+    }
+
+    public function testExceptionLoggerFromApplication() : void
+    {
+        $compiler = $this->createCompiler();
+        $compiler->getContainerBuilder()
+            ->addDefinition('applicationLogger')
+            ->setType(NullExceptionLogger::class);
+        $compiler->processExtensions();
+
+        $this->getExtension($compiler)->beforeCompile();
+
+        Assert::false($compiler->getContainerBuilder()->hasDefinition(self::NAME . '.exceptionLogger'));
+    }
+
+    private function createCompiler() : Compiler
+    {
+        $compiler = new Compiler();
+        $compiler->addExtension(self::NAME, new MailChimpExtension());
+        $compiler->addConfig([
+            self::NAME => [
+                'apiKey' => 'someApiKey123-us11',
+            ],
+        ]);
+
+        return $compiler;
+    }
+
+    private function getExtension(Compiler $compiler) : MailChimpExtension
+    {
+        $extension = $compiler->getExtensions(MailChimpExtension::class)[self::NAME];
+        assert($extension instanceof MailChimpExtension);
+
+        return $extension;
+    }
+
+    private function getExceptionLoggerEntity(Compiler $compiler) : mixed
+    {
+        $definition = $compiler->getContainerBuilder()->getDefinition(self::NAME . '.exceptionLogger');
+        assert($definition instanceof ServiceDefinition);
+
+        return $definition->getFactory()->getEntity();
     }
 }
 

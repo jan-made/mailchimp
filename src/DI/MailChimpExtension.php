@@ -14,6 +14,7 @@ use Nette\Schema\Schema;
 use Nette\Utils\Strings;
 use Nette\Utils\Validators;
 use stdClass;
+use Tracy\ILogger;
 use Trejjam\MailChimp;
 use function sprintf;
 
@@ -132,6 +133,18 @@ final class MailChimpExtension extends CompilerExtension
             ->setType(MailChimp\Group\Root::class);
         $builder->addDefinition($this->prefix('group.lists'))
             ->setType(MailChimp\Group\Lists::class);
+
+        if ($builder->getByType(MailChimp\Logger\IExceptionLogger::class) === null) {
+            $hasTracyLogger = interface_exists(ILogger::class) && $builder->getByType(ILogger::class) !== null;
+
+            $builder->addDefinition($this->prefix('exceptionLogger'))
+                ->setType(MailChimp\Logger\IExceptionLogger::class)
+                ->setFactory(
+                    $hasTracyLogger
+                        ? MailChimp\Logger\TracyExceptionLogger::class
+                        : MailChimp\Logger\NullExceptionLogger::class
+                );
+        }
 
         $builder->addDefinition($this->prefix('lists'))
             ->setType(MailChimp\Lists::class)
