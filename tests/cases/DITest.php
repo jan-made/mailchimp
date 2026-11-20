@@ -184,6 +184,40 @@ final class DITest extends TestCase
         $this->getExtension($compiler)->beforeCompile();
 
         Assert::same(TracyExceptionLogger::class, $this->getExceptionLoggerEntity($compiler));
+        Assert::same('tracy.logger', $this->getExceptionLoggerReference($compiler));
+    }
+
+    public function testExceptionLoggerWithSeveralTracyLoggers() : void
+    {
+        $compiler = $this->createCompiler();
+        foreach (['applicationLogger', 'tracy.logger'] as $name) {
+            $compiler->getContainerBuilder()
+                ->addDefinition($name)
+                ->setType(ILogger::class)
+                ->setFactory([Debugger::class, 'getLogger']);
+        }
+        $compiler->processExtensions();
+
+        $this->getExtension($compiler)->beforeCompile();
+
+        Assert::same(TracyExceptionLogger::class, $this->getExceptionLoggerEntity($compiler));
+        Assert::same('tracy.logger', $this->getExceptionLoggerReference($compiler));
+    }
+
+    public function testExceptionLoggerWithSeveralUnknownTracyLoggers() : void
+    {
+        $compiler = $this->createCompiler();
+        foreach (['applicationLogger', 'secondApplicationLogger'] as $name) {
+            $compiler->getContainerBuilder()
+                ->addDefinition($name)
+                ->setType(ILogger::class)
+                ->setFactory([Debugger::class, 'getLogger']);
+        }
+        $compiler->processExtensions();
+
+        $this->getExtension($compiler)->beforeCompile();
+
+        Assert::same(NullExceptionLogger::class, $this->getExceptionLoggerEntity($compiler));
     }
 
     public function testExceptionLoggerFromApplication() : void
@@ -226,6 +260,16 @@ final class DITest extends TestCase
         assert($definition instanceof ServiceDefinition);
 
         return $definition->getFactory()->getEntity();
+    }
+
+    private function getExceptionLoggerReference(Compiler $compiler) : string
+    {
+        $definition = $compiler->getContainerBuilder()->getDefinition(self::NAME . '.exceptionLogger');
+        assert($definition instanceof ServiceDefinition);
+        $reference = $definition->getFactory()->arguments[0];
+        assert($reference instanceof Reference);
+
+        return $reference->getValue();
     }
 }
 
